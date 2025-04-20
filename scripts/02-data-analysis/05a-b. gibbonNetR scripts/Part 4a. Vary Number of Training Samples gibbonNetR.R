@@ -1,111 +1,106 @@
+library(gibbonNetR)
+library(stringr)
 
-# Load necessary packages and functions
-devtools::load_all("/Users/denaclink/Desktop/RStudioProjects/gibbonNetR")
+# ------------------------ #
+#        BASE PATH         #
+# ------------------------ #
 
-TempFolder <- list.files('/Volumes/DJC Files/JahooGibbonClipsRandomSmallMulti',full.names = T)
-OutputDir <- '/Volumes/DJC Files/JahooClipsRandomImagesMulti/'
+base_dir <- "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo"
 
-for(a in 1:length(TempFolder)){
+# ------------------------ #
+#        PATH SETUP        #
+# ------------------------ #
 
-TempPath <-  basename(TempFolder[a])
-# Create spectrogram images
-spectrogram_images(
-  trainingBasePath = TempFolder[a],
-  outputBasePath = paste(OutputDir,TempPath, sep=''),
-  minfreq.khz = 0.5,
-  maxfreq.khz = 3.0,
-  splits = c(0.7, 0.3, 0), # Assign proportion to training, validation, or test folders
-  new.sampleratehz = 'NA'
-)
+input_clips_path <- file.path(base_dir, "randomization/JahooGibbonClipsRandom")
+spectrogram_output_path <- "/Volumes/DJC Files/JahooClipsRandomImages/"  # not under base_dir
+image_training_path <- file.path(base_dir, "randomization/JahooGibbonClipsRandomImages")
+image_test_path <- file.path(base_dir, "data/AcousticData/Dakrong_testdata_images/")
+training_output_path <- file.path(base_dir, "results/gibbonNetR/randomization_binary")
+deployment_output_base <- file.path(base_dir, "results/gibbonNetR/randomization_binary_results")
+deployment_input_wavs <- file.path(base_dir, "data/AcousticData/Jahoo_testdata_1hr_files")
 
+# ------------------------ #
+#  SPECTROGRAM GENERATION  #
+# (optional - run once)    #
+# ------------------------ #
+
+# spectro_folders <- list.files(input_clips_path, full.names = TRUE)
+# for (i in seq_along(spectro_folders)) {
+#   folder_name <- basename(spectro_folders[i])
+#   output_path <- file.path(spectrogram_output_path, folder_name)
+#   spectrogram_images(
+#     trainingBasePath = spectro_folders[i],
+#     outputBasePath = output_path,
+#     minfreq.khz = 0.5,
+#     maxfreq.khz = 3.0,
+#     splits = c(0.7, 0.3, 0),
+#     new.sampleratehz = 'NA'
+#   )
+# }
+
+# ------------------------ #
+#     TRAINING MODELS      #
+# ------------------------ #
+
+train_folders <- list.files(image_training_path, full.names = TRUE)
+
+for (i in seq_along(train_folders)) {
+  train_folder <- train_folders[i]
+  training_name <- basename(train_folder)
+  n_samples <- as.numeric(str_split_fixed(training_name, 'samples', 2)[,1])
+  batch_size <- round(n_samples * 0.3)
+
+  train_CNN_binary(
+    input.data.path = train_folder,
+    noise.weight = 0.5,
+    architecture = 'resnet50',
+    save.model = TRUE,
+    learning_rate = 0.001,
+    test.data = image_test_path,
+    unfreeze.param = TRUE,
+    batch_size = batch_size,
+    brightness = 1,
+    contrast = 1,
+    saturation = 1,
+    epoch.iterations = c(5),
+    list.thresholds = seq(0, 1, 0.1),
+    early.stop = "yes",
+    output.base.path = training_output_path,
+    trainingfolder = training_name,
+    positive.class = "gibbon",
+    negative.class = "noise"
+  )
 }
 
-# Train model over random samples ---------------------------------------------------------
-ListRandomFolders <- list.files('/Volumes/DJC Files/JahooGibbonClipsRandomImages',full.names = TRUE)
+# ------------------------ #
+#   DEPLOYING MODELS       #
+# ------------------------ #
 
-for(b in 1:length(ListRandomFolders)){
+model_files <- list.files(training_output_path, pattern = "\\.pt$", recursive = TRUE, full.names = TRUE)
 
-# Location of spectrogram images for training
-input.data.path <-  ListRandomFolders[b]
+for (k in seq_along(model_files)) {
+  model_path <- model_files[k]
+  model_name <- str_split_fixed(basename(model_path), "_model", 2)[,1]
+  output_folder <- file.path(deployment_output_base, model_name)
 
-# Location of spectrogram images for testing
-test_data_path <- '/Volumes/DJC Files/imagesvietnam/test'
-
-# Training data folder short
-trainingfolder.short <- basename(ListRandomFolders[b])
-
-Nsamplenumeric <- as.numeric(str_split_fixed(trainingfolder.short,'samples',2)[,1])
-
-# Number of epochs to include
-epoch.iterations <- c(5)
-
-# Train the models specifying different architectures
-
-batch_size = round(Nsamplenumeric*0.3,0)
-
-
-freeze.param <- c(TRUE)
-
-    gibbonNetR::train_CNN_binary(
-      input.data.path = input.data.path,
-      noise.weight = 0.5,
+  tryCatch({
+    deploy_CNN_binary(
+      clip_duration = 12,
       architecture = 'resnet50',
-      save.model = TRUE,
-      learning_rate = 0.001,
-      test.data = test_data_path,
-      unfreeze.param = freeze.param,
-      batch_size =batch_size,
-      # FALSE means the features are frozen
-      epoch.iterations = epoch.iterations,
-      list.thresholds = seq(0, 1, .1),
-      early.stop = "yes",
-      output.base.path = "/Volumes/DJC Files/JahooGibbonModelsRandomGibbonNetR/",
-      trainingfolder = trainingfolder.short,
-      positive.class = "gibbon",
-      negative.class = "noise"
+      output_folder = file.path(output_folder, "Images"),
+      output_folder_selections = file.path(output_folder, "Selections"),
+      output_folder_wav = file.path(output_folder, "Wavs"),
+      detect_pattern = NA,
+      top_model_path = model_path,
+      path_to_files = deployment_input_wavs,
+      downsample_rate = 'NA',
+      threshold = 0.1,
+      save_wav = FALSE,
+      positive.class = 'gibbon',
+      negative.class = 'noise',
+      max_freq_khz = 3
     )
-
-
+  }, error = function(e) {
+    cat("Error in model", model_name, ":", conditionMessage(e), "\n")
+  })
 }
-
-
-# Deploy model over sound files -------------------------------------------
-
-# Specify model path
-\
-   ModelPath <- list.files('/Volumes/DJC Files/JahooGibbonModelsRandomGibbonNetR',full.names =TRUE,
-                           recursive = TRUE)
-
-   ModelList <- ModelPath[str_detect(ModelPath,'.pt')]
-
-   for(k in 1:length(ModelList)){ tryCatch({
-   print(k)
-   ModelPath <- ModelList[k]
-   ModelName <- str_split_fixed(basename(ModelList[k]),'_model',n=2)[,1]
-
-   OutputFolder <- paste('/Volumes/DJC Files/JahooTestDataPerformancegibbonNetR/',ModelName,'/',sep='')
-
-   WavFiles <- '/Volumes/DJC Files/MultiSpeciesTransferLearning/WideArrayEvaluation/Jahoo/SoundFiles'
-
-   deploy_CNN_binary (
-     clip_duration = 12,
-     architecture='resnet50',
-     output_folder = paste(OutputFolder,'/Images/',sep=''),
-     output_folder_selections = paste(OutputFolder,'/Selections/',sep=''),
-     output_folder_wav = paste(OutputFolder,'/Wavs/',sep=''),
-     detect_pattern=NA,
-     top_model_path = ModelPath,
-     path_to_files = WavFiles,
-     downsample_rate = 'NA',
-     threshold = 0.1,
-     save_wav = FALSE,
-     positive.class = 'gibbon',
-     negative.class = 'noise',
-     max_freq_khz = 3
-   )
-
-   }, error = function(e) {
-     cat("ERROR :", conditionMessage(e), "\n")
-   })
-}
-
