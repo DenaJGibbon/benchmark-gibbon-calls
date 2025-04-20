@@ -24,22 +24,7 @@ JahooMFCCDFTrain <- rbind.data.frame(JahooMFCCDF,JahooMFCCDFNoise)
 
 JahooMFCCDFTrain$class <- as.factor(JahooMFCCDFTrain$class )
 
-write.csv(JahooMFCCDFTrain,'data/JahooMFCCDFTrain.csv')
-
-tune.rad <-
-  e1071::tune(
-    svm,
-    JahooMFCCDFTrain[,2: (ncol(JahooMFCCDFTrain) -1)],
-    JahooMFCCDFTrain$class,
-    kernel = "radial",
-    tunecontrol = tune.control(cross = 5),
-    ranges = list(
-      cost = c(0.001, 0.01, 0.1, 1, 2,
-               10, 100, 1000),
-      gamma = c(0.01, 0.1, 0.5, 1, 2)
-    )
-  )
-
+#write.csv(JahooMFCCDFTrain,'data/JahooMFCCDFTrain.csv')
 
 ml.model.svm.jahoo <-
   e1071::svm(
@@ -144,9 +129,6 @@ CrestedGibbonSVMMultiPlot <- ggplot(data = BestF1data.frameCrestedGibbonSVMMulti
 
 CrestedGibbonSVMMultiPlot
 
-
-cowplot::plot_grid(CrestedGibbonSVMMultiPlot,CrestedGibbonCNNBinary,CrestedGibbonCNNMulti,CrestedGibbonBirdNETPlot)
-
 # Multi-class -------------------------------------------------------------
 JahooMFCCDFCrested <- MFCCFunction(input.dir='data/AcousticData/Jahoo_trainingdata_manual_annotations_addDanum/CrestedGibbons',
                             min.freq = 400,
@@ -168,7 +150,7 @@ JahooMFCCDFGrey<- MFCCFunction(input.dir='data/AcousticData/Jahoo_trainingdata_m
 
 JahooMFCCDFGrey$class <- 'GreyGibbons'
 
-JahooMFCCDFNoise <- MFCCFunction(input.dir='data/AcousticData/Jahoo_trainingdata_manual_annotations_addDanum/noise',
+JahooMFCCDFNoise <- MFCCFunction(input.dir='data/AcousticData/Jahoo_trainingdata_manual_annotations_addDanum/Noise',
                                  min.freq = 400,
                                  max.freq = 3000,
                                  n.windows = 9,
@@ -184,29 +166,13 @@ JahooMFCCDFTrain <- rbind.data.frame(JahooMFCCDFCrested,JahooMFCCDFGrey,JahooMFC
 
 JahooMFCCDFTrain$class <- as.factor(JahooMFCCDFTrain$class )
 
-
-tune.rad <-
-  e1071::tune(
-    svm,
-    JahooMFCCDFTrain[,2: (ncol(JahooMFCCDFTrain) -1)],
-    JahooMFCCDFTrain$class,
-    kernel = "radial",
-    tunecontrol = tune.control(cross = 5),
-    ranges = list(
-      cost = c(0.001, 0.01, 0.1, 1, 2,
-               10, 100, 1000),
-      gamma = c(0.01, 0.1, 0.5, 1, 2)
-    )
-  )
-
-
 ml.model.svm.jahoo <-
   e1071::svm(
     JahooMFCCDFTrain[, 2: (ncol(JahooMFCCDFTrain) -1)],
     JahooMFCCDFTrain$class,
     kernel = "radial",
-    gamma = tune.rad$best.parameters$gamma,
-    cost = tune.rad$best.parameters$cost,
+    # gamma = tune.rad$best.parameters$gamma,
+    # cost = tune.rad$best.parameters$cost,
     cross = 20,
     probability = TRUE
   )
@@ -232,7 +198,7 @@ JahooMFCCDFTestNoise <- MFCCFunction(input.dir='data/AcousticData/Jahoo_testdata
                                      win.hop.time = 0.25)
 
 JahooMFCCDFTest <- rbind.data.frame(JahooTestMFCCDF,JahooMFCCDFTestNoise)
-
+#write.csv(JahooMFCCDFTest,'data/JahooMFCCDFTest.csv',row.names = F)
 JahooMFCCDFTest$class <- as.factor(JahooMFCCDFTest$class )
 table(JahooMFCCDFTest$class)
 
@@ -284,4 +250,4 @@ BestF1data.frameCrestedGibbonSVMMulti
 max(na.omit(BestF1data.frameCrestedGibbonSVMMulti$F1))
 BestF1data.frameCrestedGibbonSVMMulti[which.max(na.omit(BestF1data.frameCrestedGibbonSVMMulti$F1)),]
 
-write.csv(BestF1data.frameCrestedGibbonSVMMulti,'data/BestF1data.frameCrestedGibbonSVMMulti.csv')
+#write.csv(BestF1data.frameCrestedGibbonSVMMulti,'data/BestF1data.frameCrestedGibbonSVMMulti.csv')

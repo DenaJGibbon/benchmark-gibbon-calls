@@ -1,0 +1,76 @@
+
+# Part 1. Binary classification training
+```{zsh, engine.opts='-i'}
+DATA_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/JahooGibbonClipsRandom/"
+OUTPUT_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/"
+
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+mkdir -p "$OUTPUT_DIR" && for FOLDER in "$DATA_DIR"/*; do if [ -d "$FOLDER" ]; then FOLDER_NAME=$(basename "$FOLDER"); INPUT_PATH="$FOLDER"; OUTPUT_PATH="$OUTPUT_DIR/${FOLDER_NAME}/${FOLDER_NAME}.tflite"; python train.py --i "$INPUT_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000 --mixup && echo "Processed: $FOLDER_NAME"; fi; done
+
+```
+
+# Part 2. Binary deployment
+```{zsh, engine.opts='-i'}
+
+WAVS_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_1hr_files/"
+CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/"
+OUTPUT_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/" 
+
+# Activate conda environment and change to the working directory
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+
+mkdir -p "$OUTPUT_BASE_DIR" && for FOLDER in "$CLASSIFIERS_BASE_DIR"/*; do 
+    if [ -d "$FOLDER" ]; then 
+        for CLASSIFIER_PATH in "$FOLDER"/*.tflite; do 
+            if [ -f "$CLASSIFIER_PATH" ]; then 
+                CLASSIFIER_NAME=$(basename "$CLASSIFIER_PATH" .tflite)
+                OUTPUT_PATH="$OUTPUT_BASE_DIR/$CLASSIFIER_NAME"
+                mkdir -p "$OUTPUT_PATH"
+                python analyze.py --i "$WAVS_DIR" --classifier "$CLASSIFIER_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000 && echo "Processed with classifier: $CLASSIFIER_NAME"
+            fi
+        done
+    fi 
+done
+
+```
+
+# Part 3. Multiclass training
+```{zsh, engine.opts='-i'}
+DATA_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/randomization/JahooGibbonClipsRandomMulti/"
+OUTPUT_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/"
+
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+mkdir -p "$OUTPUT_DIR" && for FOLDER in "$DATA_DIR"/*; do if [ -d "$FOLDER" ]; then FOLDER_NAME=$(basename "$FOLDER"); INPUT_PATH="$FOLDER"; OUTPUT_PATH="$OUTPUT_DIR/${FOLDER_NAME}/${FOLDER_NAME}.tflite"; python train.py --i "$INPUT_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000 --mixup && echo "Processed: $FOLDER_NAME"; fi; done
+
+```
+
+
+# Part 5. Multiclass deployment
+```{zsh, engine.opts='-i'}
+
+WAVS_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_1hr_files/"
+CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/"
+OUTPUT_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/" 
+
+# Activate conda environment and change to the working directory
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+
+mkdir -p "$OUTPUT_BASE_DIR" && for FOLDER in "$CLASSIFIERS_BASE_DIR"/*; do 
+    if [ -d "$FOLDER" ]; then 
+        for CLASSIFIER_PATH in "$FOLDER"/*.tflite; do 
+            if [ -f "$CLASSIFIER_PATH" ]; then 
+                CLASSIFIER_NAME=$(basename "$CLASSIFIER_PATH" .tflite)
+                OUTPUT_PATH="$OUTPUT_BASE_DIR/$CLASSIFIER_NAME"
+                mkdir -p "$OUTPUT_PATH"
+                python analyze.py --i "$WAVS_DIR" --classifier "$CLASSIFIER_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000 && echo "Processed with classifier: $CLASSIFIER_NAME"
+            fi
+        done
+    fi 
+done
+
+```
+
