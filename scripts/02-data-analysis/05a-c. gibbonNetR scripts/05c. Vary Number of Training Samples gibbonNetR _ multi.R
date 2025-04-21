@@ -1,6 +1,5 @@
 # Load necessary packages and functions -----------------------------------
 library(stringr)
-library(devtools)
 library(gibbonNetR)
 
 # ---- SET BASE DIRECTORY HERE ----
@@ -38,7 +37,7 @@ deployment_output_base <- file.path(base_dir, "results/gibbonNetR/randomization_
 
 ListRandomFolders <- list.files(spectrogram_output_dir, full.names = TRUE)
 
-for (b in c(1:5, 12:16)) {
+for (b in c(1:length(ListRandomFolders))) {
   input.data.path <- ListRandomFolders[b]
   trainingfolder.short <- basename(input.data.path)
   Nsamplenumeric <- as.numeric(str_split_fixed(trainingfolder.short, 'samples', 2)[, 1])
@@ -54,6 +53,9 @@ for (b in c(1:5, 12:16)) {
     class_weights = c(0.33, 0.33, 0.33),
     unfreeze.param = TRUE,
     epoch.iterations = epoch.iterations,
+    brightness = 1,
+    contrast = 1,
+    saturation = 1,
     save.model = TRUE,
     early.stop = "yes",
     output.base.path = model_output_dir,
@@ -67,7 +69,7 @@ for (b in c(1:5, 12:16)) {
 ModelPath <- list.files(model_output_dir, full.names = TRUE, recursive = TRUE)
 ModelList <- ModelPath[str_detect(ModelPath, ".pt")]
 
-for (k in 28:37) {
+for (k in 1:length(ModelList)) {
   tryCatch({
     print(k)
     model_path <- ModelList[k]
@@ -77,18 +79,18 @@ for (k in 28:37) {
     deploy_CNN_multi(
       clip_duration = 12,
       architecture = 'resnet50',
-      output_folder = file.path(output_folder, "Images"),
-      output_folder_selections = file.path(output_folder, "Selections"),
-      output_folder_wav = file.path(output_folder, "Wavs"),
+      output_folder = file.path(output_folder, "Images/"),
+      output_folder_selections = file.path(output_folder, "Selections/"),
+      output_folder_wav = file.path(output_folder, "Wavs/"),
       detect_pattern = NA,
       top_model_path = model_path,
       path_to_files = sound_files_dir,
       downsample_rate = 'NA',
       save_wav = FALSE,
-      class_names = c('CrestedGibbons', 'GreyGibbons', 'noise'),
+      class_names = c('CrestedGibbon', 'GreyGibbon', 'noise'),
       noise_category = 'noise',
       single_class = TRUE,
-      single_class_category = 'CrestedGibbons',
+      single_class_category = 'CrestedGibbon',
       threshold = 0.1,
       max_freq_khz = 3
     )
