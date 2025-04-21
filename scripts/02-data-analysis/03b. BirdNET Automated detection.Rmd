@@ -52,8 +52,8 @@ mkdir -p "$OUTPUT_DIR" && for FOLDER in "$DATA_DIR"/*; do if [ -d "$FOLDER" ]; t
 ```{zsh, engine.opts='-i'}
 
 WAVS_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_1hr_files/"
-CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/"
-OUTPUT_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/" 
+CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/Missing/"
+OUTPUT_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/Missing/" 
 
 # Activate conda environment and change to the working directory
 cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
@@ -66,7 +66,7 @@ mkdir -p "$OUTPUT_BASE_DIR" && for FOLDER in "$CLASSIFIERS_BASE_DIR"/*; do
                 CLASSIFIER_NAME=$(basename "$CLASSIFIER_PATH" .tflite)
                 OUTPUT_PATH="$OUTPUT_BASE_DIR/$CLASSIFIER_NAME"
                 mkdir -p "$OUTPUT_PATH"
-                python analyze.py --i "$WAVS_DIR" --classifier "$CLASSIFIER_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000 && echo "Processed with classifier: $CLASSIFIER_NAME"
+                python analyze.py --i "$WAVS_DIR" --classifier "$CLASSIFIER_PATH" --o "$OUTPUT_PATH" --fmin 500 --fmax 3000  && echo "Processed with classifier: $CLASSIFIER_NAME"
             fi
         done
     fi 
