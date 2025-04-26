@@ -15,7 +15,7 @@ input_clips_path <- file.path(base_dir, "randomization/JahooGibbonClipsRandom")
 spectrogram_output_path <- "/Volumes/DJC Files/JahooClipsRandomImages/"  # not under base_dir
 image_training_path <- file.path(base_dir, "randomization/JahooGibbonClipsRandomImages")
 image_test_path <- file.path(base_dir, "data/AcousticData/Dakrong_testdata_images/")
-training_output_path <- file.path(base_dir, "results/gibbonNetR/randomization_binary")
+training_output_path <- file.path(base_dir, "results/gibbonNetR/randomization")
 deployment_output_base <- file.path(base_dir, "results/gibbonNetR/randomization_binary_results")
 deployment_input_wavs <- file.path(base_dir, "data/AcousticData/Jahoo_testdata_1hr_files")
 
@@ -78,7 +78,7 @@ for (i in seq_along(train_folders)) {
 
 model_files <- list.files(training_output_path, pattern = "\\.pt$", recursive = TRUE, full.names = TRUE)
 
-for (k in seq_along(model_files)) {
+for (k in 1:length(model_files)) {
   model_path <- model_files[k]
   model_name <- str_split_fixed(basename(model_path), "_model", 2)[,1]
   output_folder <- file.path(deployment_output_base, model_name)
