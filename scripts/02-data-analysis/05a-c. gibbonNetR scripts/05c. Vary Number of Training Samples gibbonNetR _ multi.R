@@ -8,7 +8,6 @@ base_dir <- "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/"
 
 
 # Define all other paths relative to base_dir -----------------------------
-
 input_clips_dir <- file.path(base_dir, "randomization/JahooGibbonClipsRandomMulti")
 spectrogram_output_dir <- file.path(base_dir, "/randomization/JahooGibbonClipsRandomMultiImages/")
 test_data_path <- file.path(base_dir, "data/AcousticData/Dakrong_testdata_images_multi/")
@@ -99,3 +98,55 @@ for (k in 1:length(ModelList)) {
   })
 }
 
+
+# Add full training samples -----------------------------------------------
+input.data.path <- '/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/randomization/JahooGibbonClipsRandomMultiImages/213samples_1'
+trainingfolder.short <- basename(input.data.path)
+Nsamplenumeric <- as.numeric(str_split_fixed(trainingfolder.short, 'samples', 2)[, 1])
+batch_size <- round(Nsamplenumeric * 0.3, 0)
+epoch.iterations <- c(5)
+
+gibbonNetR::train_CNN_multi(
+  input.data.path = input.data.path,
+  architecture = 'resnet50',
+  learning_rate = 0.001,
+  test.data = test_data_path,
+  batch_size = batch_size,
+  class_weights = c(0.33, 0.33, 0.33),
+  unfreeze.param = TRUE,
+  epoch.iterations = epoch.iterations,
+  brightness = 1,
+  contrast = 1,
+  saturation = 1,
+  save.model = TRUE,
+  early.stop = "yes",
+  output.base.path = model_output_dir,
+  trainingfolder = trainingfolder.short,
+  noise.category = "noise"
+)
+
+
+model_path <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/gibbonNetR/randomization_multi/_213samples_1_multi_unfrozen_TRUE_',
+           pattern = '.pt',full.names = TRUE)
+
+model_name <- str_split_fixed(basename(model_path), "_model", n = 2)[, 1]
+output_folder <- file.path(deployment_output_base, model_name)
+
+deploy_CNN_multi(
+  clip_duration = 12,
+  architecture = 'resnet50',
+  output_folder = file.path(output_folder, "Images/"),
+  output_folder_selections = file.path(output_folder, "Selections/"),
+  output_folder_wav = file.path(output_folder, "Wavs/"),
+  detect_pattern = NA,
+  top_model_path = model_path,
+  path_to_files = sound_files_dir,
+  downsample_rate = 'NA',
+  save_wav = FALSE,
+  class_names = c('CrestedGibbon', 'GreyGibbon', 'noise'),
+  noise_category = 'noise',
+  single_class = TRUE,
+  single_class_category = 'CrestedGibbon',
+  threshold = 0.1,
+  max_freq_khz = 3
+)

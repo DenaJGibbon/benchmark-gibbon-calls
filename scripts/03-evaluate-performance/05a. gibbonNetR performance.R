@@ -15,12 +15,12 @@ start.time.buffer <- 6
 end.time.buffer <- 3
 
 PerformanceFolders <- list.files(
-  '/Volumes/DJC Files/JahooTestDataPerformancegibbonNetR/',
+  '/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/gibbonNetR/randomization_binary_results/',
   full.names = TRUE
 )
 
 TestDataSet <- list.files(
-  '/Volumes/DJC Files/MultiSpeciesTransferLearning/WideArrayEvaluation/Jahoo/AnnotatedFiles',
+  '/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_1hr_annotations/',
   full.names = TRUE
 )
 
@@ -33,8 +33,9 @@ for (z in seq_along(PerformanceFolders)) {
     print(paste('Processing', z, 'out of', length(PerformanceFolders)))
 
     TopModelresults <- list.files(
-      paste0(PerformanceFolders[[z]], '/Selections/'),
-      full.names = TRUE
+      PerformanceFolders[[z]],pattern = 'Selectionsgibbon',
+      full.names = TRUE,
+      recursive = TRUE
     )
 
     TopModelDetectionDF <- data.frame()
@@ -175,7 +176,7 @@ CombinedF1data[which.max(CombinedF1data$F1),]
 
 MaxF1PlotCNN <- CombinedF1data %>%
   group_by(PerformanceFolder) %>%
-  summarise(F1 = max(F1, na.rm = TRUE))
+  dplyr::summarise(F1 = max(F1, na.rm = TRUE))
 
 MaxF1PlotCNN$samples <- str_split_fixed(MaxF1PlotCNN$PerformanceFolder, 'samples', 2)[, 1]
 MaxF1PlotCNN$samples <- as.numeric(str_split_fixed(MaxF1PlotCNN$samples, '_', 2)[, 2])
@@ -183,6 +184,8 @@ MaxF1PlotCNN$samples <- as.numeric(str_split_fixed(MaxF1PlotCNN$samples, '_', 2)
 CNN <- ggline(CombinedF1data, x = 'samples', y = 'F1', add = "mean_se") +
   ggtitle(paste('CNN Binary \n max F1:', max(CombinedF1data$F1))) +
   ylim(0, 1) + xlab('')
+
+CNN
 
 # Combined plot example (BirdNET assumed to exist) ---------------------------
 CombinedPlot <- cowplot::plot_grid(BirdNET, CNN) + xlab('Number of training samples')

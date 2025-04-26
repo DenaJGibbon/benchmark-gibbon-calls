@@ -112,9 +112,12 @@ CombinedF1dataMulti <- CombinedF1dataMulti %>%
          Recall = round(Recall, 1),
          F1 = round(F1, 1))
 
-# --- Plotting ---
+
+
+# Plotting ----------------------------------------------------------------
 AUCPlotCNNMulti <- ggerrorplot(data = CombinedF1dataMulti, x = "samples", y = "auc") +
   xlab('') + ylab('AUC') + ylim(0, 1) + ggtitle("CNN Multi AUC")
+
 
 F1Plot <- ggerrorplot(data = CombinedF1dataMulti, x = "Thresholds", y = "F1", facet.by = "samples") +
   ylim(0, 1) + xlab("Probability") + geom_hline(yintercept = 0.8, color = "red", linetype = "dashed")
@@ -136,9 +139,9 @@ CombinedPlot <- ggdraw(add_sub(CombinedPlot, "Number of training samples", y = 6
 
 AUCPlotCNNMulti <- AUCPlotCNNMulti + ggtitle("CNN Multi")
 
-CombinedPlotAUC <- cowplot::plot_grid(AUCPlotBirdNETBin, AUCPlotBirdNETMulti, AUCPlotCNNMulti)
+CombinedPlotAUC <- cowplot::plot_grid(AUCPlotBirdNETBin, AUCPlotBirdNETMulti,AUCPlotCNNBinary, AUCPlotCNNMulti)
 CombinedPlotAUC <- ggdraw(add_sub(CombinedPlotAUC, "Number of training samples", y = 6, x = 0.5, vjust = 4.5))
-
+CombinedPlotAUC
 pdf("F1andAUC.pdf", height = 14, width = 12)
 cowplot::plot_grid(CombinedPlot, CombinedPlotAUC, labels = c("A)", "B)"), label_x = 0.9, nrow = 2)
 graphics.off()

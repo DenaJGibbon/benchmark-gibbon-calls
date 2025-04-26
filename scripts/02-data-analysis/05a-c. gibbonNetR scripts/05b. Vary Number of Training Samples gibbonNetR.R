@@ -43,8 +43,8 @@ deployment_input_wavs <- file.path(base_dir, "data/AcousticData/Jahoo_testdata_1
 # ------------------------ #
 
 train_folders <- list.files(image_training_path, full.names = TRUE)
-
-for (i in seq_along(train_folders)) {
+i <- 42
+# for (i in seq_along(train_folders)) {
   train_folder <- train_folders[i]
   training_name <- basename(train_folder)
   n_samples <- as.numeric(str_split_fixed(training_name, 'samples', 2)[,1])
@@ -70,7 +70,7 @@ for (i in seq_along(train_folders)) {
     positive.class = "gibbon",
     negative.class = "noise"
   )
-}
+#}
 
 # ------------------------ #
 #   DEPLOYING MODELS       #

@@ -154,9 +154,11 @@ CombinedF1dataBirdNETmulti <- CombinedF1dataBirdNETmulti %>%
          Recall = round(Recall, 1),
          F1 = round(F1, 1))
 
-write.csv(CombinedF1dataBirdNETmulti,'data/CombinedF1dataBirdNETmulti.csv',row.names = F)
+write.csv(CombinedF1dataBirdNETmulti,'data/CombinedF1dataBirdNET_automateddetect_multi.csv',row.names = F)
 
 # Visualization --------------------------------------------------------------
+CombinedF1dataBirdNETmulti <- read.csv('data/CombinedF1dataBirdNET_automateddetect_multi.csv')
+
 AUCPlotBirdNETMulti <- ggpubr::ggerrorplot(CombinedF1dataBirdNETmulti, x = 'samples', y = 'auc') +
   xlab('') + ylab('AUC') + ylim(0, 1)
 
