@@ -172,31 +172,27 @@ analysis, and evaluation.
   - `results/plots/Figure4-performance-metrics.pdf`
   - `results/plots/Figure3-performance-metrics.pdf`
 
-## Contact
-
-For questions or contributions, please contact the project maintainer at
-\[<dena.clink@cornell.edu>\].
-
 ## Citation
 
 Please cite both if you use these data or methods:
 
 Clink, D., Cross-Jaya, H., Kim, J., Ahmad, A. H., Hong, M., Sala, R.,
 Birot, H., Agger, C., Vu, T. T., Thi, H. N., Chi, T. N., & Klinck, H.
-(2024). Dataset for “Benchmarking for the automated detection of
-southern yellow-cheeked crested gibbon calls from passive acoustic
-monitoring data” \[Data set\]. Zenodo.
+(2024). Dataset for “Benchmarking automated detection and classification
+approaches for long-term acoustic monitoring of endangered species: a
+case study on gibbons from Cambodia” \[Data set\]. Zenodo.
 <https://doi.org/10.5281/zenodo.12706803>
 
 Clink DJ, Cross-Jaya H, Kim J, Ahmad AH, Hong M, Sala R, Birot H, Agger
-C, Vu TT, Thi HN, Chi TN. Benchmarking for the automated detection and
-classification of southern yellow-cheeked crested gibbon calls from
-passive acoustic monitoring data. bioRxiv. 2024:2024-08.
+C, Vu TT, Thi HN, Chi TN. Benchmarking automated detection and
+classification approaches for long-term acoustic monitoring of
+endangered species: a case study on gibbons from Cambodia. bioRxiv.
+2024:2024-08.
 
-<figure>
-<img
-src="https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTime.gif"
-alt="Online Supporting Material 1. A GIF showing the montly change in gibbon detections" />
-<figcaption aria-hidden="true">Online Supporting Material 1. A GIF
-showing the montly change in gibbon detections</figcaption>
-</figure>
+## Representative figures
+
+![Online Supporting Material 1. A GIF showing the montly change in
+gibbon
+detections](https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTime.gif)
+\## Contact For questions or contributions, please contact the project
+maintainer at \[<dena.clink@cornell.edu>\].
