@@ -2,7 +2,7 @@
 ```{zsh, engine.opts='-i'}
 
 WAVS_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Dakrong_testdata/"
-CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/"
+CLASSIFIERS_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/temp/"
 OUTPUT_BASE_DIR="/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary_testgeneralizability/" 
 
 # Activate conda environment and change to the working directory

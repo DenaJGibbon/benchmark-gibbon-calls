@@ -1,0 +1,23 @@
+# Part 1a. BirdNET clip comparision
+```{zsh, engine.opts='-i'}
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+
+python analyze.py --i "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_clips/ImagesIgnoreWindows/" --classifier "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETbinary/213samples_binary/213samples_binary.tflite" --o "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/binary/" --fmin 500 --fmax 3000
+
+```
+
+
+# Part 1b. BirdNET multiclass clips comparision
+```{zsh, engine.opts='-i'}
+cd /Users/denaclink/Documents/BirdNETUpdate/BirdNET-Analyzer
+conda activate birdnet-analyzer
+
+python analyze.py --i "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Jahoo_testdata_clips/ImagesIgnoreWindowsWavs/" --classifier "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNETmulti/213samples_1/213samples_1.tflite" --o "/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/multi/" --fmin 500 --fmax 3000
+
+```
+
+
+
+
+
