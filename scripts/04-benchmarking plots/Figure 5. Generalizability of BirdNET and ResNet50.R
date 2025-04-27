@@ -7,8 +7,6 @@ library(ggpubr)       # For generating plots
 MaxF1PlotBirdNETbinary <- read.csv('data/MaxF1PlotBirdNETbinary_generalizability.csv')
 MaxF1PlotBirdNETmulti <- read.csv('data/MaxF1PlotBirdNETmulti_generalizability.csv')
 
-# You can now work with these data frames for further analysis or visualization
-
 # ------------------------ Process Binary CNN Model ------------------------
 
 # Step 1: Read model folders for binary CNN and aggregate data
