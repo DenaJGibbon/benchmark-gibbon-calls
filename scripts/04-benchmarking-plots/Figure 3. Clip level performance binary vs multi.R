@@ -1,11 +1,13 @@
 library(ggpubr)
+library(pROC)
+library(plyr); library(dplyr)
 
 # BirdNET multi -----------------------------------------------------------
 
-ClipDetections <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/multi/',
+ClipDetections <- list.files('results/BirdNET/multi/',
                              recursive = T,full.names = T)
 
-ClipDetectionsShort <-  list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/multi/',
+ClipDetectionsShort <-  list.files('results/BirdNET/multi/',
                                    recursive = T,full.names = F)
 
 BirdNETMultiPerformanceDF <- data.frame()
@@ -109,10 +111,10 @@ CrestedGibbonBirdNETMultiPlot
 
 # BirdNET binary ----------------------------------------------------------
 
-ClipDetections <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/binary/',
+ClipDetections <- list.files('results/BirdNET/binary/',
            recursive = T,full.names = T)
 
-ClipDetectionsShort <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/BirdNET/binary/',
+ClipDetectionsShort <- list.files('results/BirdNET/binary/',
                              recursive = T,full.names = F)
 
 
@@ -218,7 +220,7 @@ CrestedGibbonBirdNETPlot
 
 # CNN Binary --------------------------------------------------------------
 
-CrestedTopBinary <- read.csv('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/gibbonNetR/jahoo_binary_jitter_3_jahoo_binary_jitter_binary_unfrozen_TRUE_/performance_tables/jahoo_binary_jitter_5_resnet50_CNNDF.csv')
+CrestedTopBinary <- read.csv('results/gibbonNetR/jahoo_binary_jitter_3_jahoo_binary_jitter_binary_unfrozen_TRUE_/performance_tables/jahoo_binary_jitter_5_resnet50_CNNDF.csv')
 MaxF1Binary <- round(max(na.omit(CrestedTopBinary$F1)),2)
 AUCBinary <- round(max(na.omit(CrestedTopBinary$AUC)),2)
 
@@ -241,7 +243,7 @@ CrestedGibbonCNNBinary
 
 # CNN Multi ---------------------------------------------------------------
 
-CrestedTopMulti <- read.csv('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/gibbonNetR/jahoo_multi_jitter_3_jahoo_multi_jitter_multi_unfrozen_TRUE_/performance_tables_multi/jahoo_multi_jitter_5_resnet50_TransferLearningCNNDFMultiThreshold.csv')
+CrestedTopMulti <- read.csv('results/gibbonNetR/jahoo_multi_jitter_3_jahoo_multi_jitter_multi_unfrozen_TRUE_/performance_tables_multi/jahoo_multi_jitter_5_resnet50_TransferLearningCNNDFMultiThreshold.csv')
 MaxF1Multi <- round(max(na.omit(CrestedTopMulti$F1)),2)
 AUCMulti <- round(max(na.omit(CrestedTopMulti$AUC)),2)
 

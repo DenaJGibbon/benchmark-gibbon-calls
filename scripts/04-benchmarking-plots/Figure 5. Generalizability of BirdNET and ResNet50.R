@@ -118,9 +118,12 @@ AUCPlot <- ggpubr::ggline(data = CombinedPerformanceDF, x = 'samples', y = 'AUC'
   scale_color_manual(values = c("#0080FF", "#00FFFF", "#80FF80", "#FF8000"))+guides(color="none")
 
 # -------------------- Combine F1 and AUC Plots ----------------------
+pdf('results/Figure5-performance-metrics.pdf',width=10)
 
 # Combine the plots into one figure
 CombinedPlot <- plot_grid(F1Plot, AUCPlot, labels = c("A)", "B)"), label_x =.95, label_y = 1, ncol = 1)
 
 # Display the combined plot
 print(CombinedPlot)
+graphics.off()
+

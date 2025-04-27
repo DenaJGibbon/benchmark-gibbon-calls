@@ -91,7 +91,7 @@ range(CombinedCallNoCallDF$Date)
 #write.csv(CombinedCallNoCallDF,'data/spatial-and-temporal/CombinedCallNoCallDF.csv',row.names = F)
 
 # Figure 6. Temporal plot -----------------------------------------------------------
-# Define the monsoon period (May to October) for the years in your dataset
+# Define the monsoon period (May to October)
 monsoon_start_1 <- as.Date("2022-05-01")
 monsoon_end_1 <- as.Date("2022-10-31")
 monsoon_start_2 <- as.Date("2023-05-01")
@@ -170,9 +170,10 @@ print(StandarizedBarplot)
 StandarizedBarplot <- ggbarplot(data=rate_df,x='Time',y='StandardizedRate')+
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +ylab('Gibbon detections \n per hour')+xlab('Local time')
 
+pdf("results/Figure6-temporal-variation.pdf", width=12)
 cowplot::plot_grid(StandarizedBarplot,DetectionsByDatePlot,
                    labels = c('A','B'), label_x = 0.9)
-
+graphics.off()
 
 # Figure 7. Interpolate call density based on GPS data-------------------------------------------------------------------------
 
@@ -226,4 +227,7 @@ Jahoo.call.density.plot <- ggplot2::ggplot() +
 
 Jahoo.call.density.plot  # Display plot
 
+pdf("results/Figure7-spatial-variation.pdf", width=12)
+Jahoo.call.density.plot
+graphics.off()
 
