@@ -14,8 +14,8 @@ tiff('results/Spectroexamplefullduet.tiff',width = 1600,res=200,height = 800)
 plot.spectrogram(TempSpec)
 graphics.off()
 
-
-TempWavLQ <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/samples_for_spectrogram/Grp2_M_R1050_20221116_060002_13.wav' )
+setwd('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/')
+TempWavLQ <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/samples_for_spectrogram/R1060_20220830_060002_LQ.wav')
 TempWavMQ <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/samples_for_spectrogram/Gibbons_M_R1023_20220502_090003_2617.wav')
 TempWavHQ <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/samples_for_spectrogram/Grp1_H_R1064_20220913_060003_3.wav')
 
