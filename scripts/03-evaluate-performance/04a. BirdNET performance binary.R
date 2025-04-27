@@ -135,39 +135,3 @@ CombinedF1dataBirdNET <- CombinedF1dataBirdNET %>%
          F1 = round(F1, 1))
 write.csv(CombinedF1dataBirdNET,'data/CombinedF1dataBirdNET_automateddetect_binary.csv',row.names = FALSE)
 
-# ------------------------- Plotting -------------------------
-CombinedF1dataBirdNET <- read.csv('data/CombinedF1dataBirdNET_automateddetect_binary.csv')
-
-AUCPlotBirdNETBin <- ggpubr::ggerrorplot(data = CombinedF1dataBirdNET, x = 'samples', y = 'auc') +
-  xlab('') + ylab('AUC') + ylim(0, 1)
-
-F1Plot <- ggpubr::ggerrorplot(data = CombinedF1dataBirdNET, x = 'Thresholds', y = 'F1', facet.by = 'samples') +
-  geom_hline(yintercept = 0.8, linetype = 'dashed', color = 'red') +
-  xlab('Confidence') + ylim(0, 1)
-
-PrecRec <- ggpubr::ggerrorplot(data = CombinedF1dataBirdNET, x = 'Precision', y = 'Recall', facet.by = 'samples')
-
-# Display plots
-AUCPlotBirdNETBin
-F1Plot
-PrecRec
-
-# ------------------------- Summary -------------------------
-CombinedF1dataBirdNET[which.max(CombinedF1dataBirdNET$F1), ]
-subset(CombinedF1dataBirdNET, F1 > 0.65)
-
-CombinedF1dataBirdNET$PerformanceFolder <-
-  as.factor(str_split_fixed(CombinedF1dataBirdNET$PerformanceFolder,
-                  pattern = '_',n=2)[,1])
-
-MaxF1PlotBirdNET <- CombinedF1dataBirdNET %>%
-  group_by(PerformanceFolder,samples) %>%
-  dplyr::summarise(F1 = max(F1, na.rm = TRUE))
-
-MaxF1PlotBirdNET$samples <- as.factor(MaxF1PlotBirdNET$samples)
-
-BirdNET <- ggpubr::ggline(data = MaxF1PlotBirdNET, x = 'samples', y = 'F1', add = "mean_se") +
-  ggtitle(paste('BirdNET Binary\nMax F1:', max(MaxF1PlotBirdNET$F1))) +
-  xlab('') + ylim(0, 1)
-
-BirdNET

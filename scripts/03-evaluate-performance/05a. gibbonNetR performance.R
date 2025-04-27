@@ -157,36 +157,5 @@ CombinedF1data$Precision <- round(CombinedF1data$Precision, 1)
 CombinedF1data$Recall <- round(CombinedF1data$Recall, 2)
 CombinedF1data$F1 <- round(CombinedF1data$F1, 2)
 
-# Plotting -------------------------------------------------------------------
-AUCPlotCNNBinary <- ggerrorplot(CombinedF1data, x = 'samples', y = 'auc') +
-  xlab('') + ylab('AUC') + ylim(0, 1)
+write.csv(CombinedF1data,'data/CombinedF1dataCNNbinary.csv',row.names = F)
 
-F1Plot <- ggerrorplot(CombinedF1data, x = 'Thresholds', y = 'F1', facet.by = 'samples') +
-  ylim(0, 1) + xlab('Probability')
-
-PrecRec <- ggerrorplot(CombinedF1data, x = 'Precision', y = 'Recall', facet.by = 'samples')
-
-# Display plots
-AUCPlotCNNBinary
-F1Plot + geom_hline(yintercept = 0.8, color = 'red', linetype = 'dashed')
-PrecRec
-
-# Best threshold performance summary -----------------------------------------
-CombinedF1data[which.max(CombinedF1data$F1),]
-
-MaxF1PlotCNN <- CombinedF1data %>%
-  group_by(PerformanceFolder) %>%
-  dplyr::summarise(F1 = max(F1, na.rm = TRUE))
-
-MaxF1PlotCNN$samples <- str_split_fixed(MaxF1PlotCNN$PerformanceFolder, 'samples', 2)[, 1]
-MaxF1PlotCNN$samples <- as.numeric(str_split_fixed(MaxF1PlotCNN$samples, '_', 2)[, 2])
-
-CNN <- ggline(CombinedF1data, x = 'samples', y = 'F1', add = "mean_se") +
-  ggtitle(paste('CNN Binary \n max F1:', max(CombinedF1data$F1))) +
-  ylim(0, 1) + xlab('')
-
-CNN
-
-# Combined plot example (BirdNET assumed to exist) ---------------------------
-CombinedPlot <- cowplot::plot_grid(BirdNET, CNN) + xlab('Number of training samples')
-ggdraw(add_sub(CombinedPlot, "Number of training samples", vpadding = grid::unit(0, "lines"), y = 6, x = 0.5, vjust = 4.5))

@@ -156,41 +156,4 @@ CombinedF1dataBirdNETmulti <- CombinedF1dataBirdNETmulti %>%
 
 write.csv(CombinedF1dataBirdNETmulti,'data/CombinedF1dataBirdNET_automateddetect_multi.csv',row.names = F)
 
-# Visualization --------------------------------------------------------------
-CombinedF1dataBirdNETmulti <- read.csv('data/CombinedF1dataBirdNET_automateddetect_multi.csv')
 
-AUCPlotBirdNETMulti <- ggpubr::ggerrorplot(CombinedF1dataBirdNETmulti, x = 'samples', y = 'auc') +
-  xlab('') + ylab('AUC') + ylim(0, 1)
-
-F1Plot <- ggpubr::ggerrorplot(CombinedF1dataBirdNETmulti, x = 'Thresholds', y = 'F1', facet.by = 'samples') +
-  xlab('Confidence') + ylim(0, 1)
-
-PrecRec <- ggpubr::ggerrorplot(CombinedF1dataBirdNETmulti, x = 'Precision', y = 'Recall', facet.by = 'samples')
-
-# Optional: Save plots or combine --------------------------------------------
-# pdf('BirdNETmulti_results.pdf', height = 12, width = 11)
-AUCPlotBirdNETMulti
-F1Plot + geom_hline(yintercept = 0.8, color = 'red', linetype = 'dashed')
-PrecRec
-# graphics.off()
-
-# Additional summary plot
-ggpubr::ggboxplot(CombinedF1dataBirdNETmulti, x = 'samples', y = 'auc') +
-  xlab('') + ylab('AUC') + ylim(0, 1)
-
-# Identify best-performing configuration
-CombinedF1dataBirdNETmulti[which.max(CombinedF1dataBirdNETmulti$F1), ]
-
-# Max F1 score per sample set -----------------------------------------------
-MaxF1PlotBirdNETmulti <- CombinedF1dataBirdNETmulti %>%
-  dplyr::group_by(PerformanceFolder) %>%
-  dplyr::summarise(F1 = max(F1, na.rm = TRUE))
-
-MaxF1PlotBirdNETmulti$samples <- as.numeric(str_split_fixed(
-  MaxF1PlotBirdNETmulti$PerformanceFolder, pattern = 'samples', n = 2)[, 1])
-
-BirdNETmulti <- ggpubr::ggline(MaxF1PlotBirdNETmulti, x = 'samples', y = 'F1', add = "mean_se") +
-  ggtitle(paste('BirdNET multi \n max F1:', max(MaxF1PlotBirdNETmulti$F1))) +
-  ylim(0, 1) + xlab('')
-
-BirdNETmulti

@@ -113,35 +113,4 @@ CombinedF1dataMulti <- CombinedF1dataMulti %>%
          F1 = round(F1, 1))
 
 
-
-# Plotting ----------------------------------------------------------------
-AUCPlotCNNMulti <- ggerrorplot(data = CombinedF1dataMulti, x = "samples", y = "auc") +
-  xlab('') + ylab('AUC') + ylim(0, 1) + ggtitle("CNN Multi AUC")
-
-
-F1Plot <- ggerrorplot(data = CombinedF1dataMulti, x = "Thresholds", y = "F1", facet.by = "samples") +
-  ylim(0, 1) + xlab("Probability") + geom_hline(yintercept = 0.8, color = "red", linetype = "dashed")
-
-PrecRec <- ggerrorplot(data = CombinedF1dataMulti, x = "Precision", y = "Recall", facet.by = "samples")
-
-# Max F1 summary plot
-MaxF1PlotCNN <- CombinedF1dataMulti %>%
-  group_by(PerformanceFolder) %>%
-  dplyr::summarise(F1 = max(F1, na.rm = TRUE)) %>%
-  mutate(samples = as.numeric(str_split_fixed(str_split_fixed(PerformanceFolder, "samples", 2)[, 1], "_", 2)[, 2]))
-
-CNNmulti <- ggline(MaxF1PlotCNN, x = "samples", y = "F1", add = "mean_se") +
-  ggtitle(paste("CNN multi \n max F1:", max(MaxF1PlotCNN$F1))) + ylim(0, 1) + xlab("")
-
-# Final combined plot (with BirdNET placeholders)
-CombinedPlot <- cowplot::plot_grid(BirdNET, BirdNETmulti, CNN, CNNmulti) + xlab("Number of training samples")
-CombinedPlot <- ggdraw(add_sub(CombinedPlot, "Number of training samples", y = 6, x = 0.5, vjust = 4.5))
-
-AUCPlotCNNMulti <- AUCPlotCNNMulti + ggtitle("CNN Multi")
-
-CombinedPlotAUC <- cowplot::plot_grid(AUCPlotBirdNETBin, AUCPlotBirdNETMulti,AUCPlotCNNBinary, AUCPlotCNNMulti)
-CombinedPlotAUC <- ggdraw(add_sub(CombinedPlotAUC, "Number of training samples", y = 6, x = 0.5, vjust = 4.5))
-CombinedPlotAUC
-pdf("F1andAUC.pdf", height = 14, width = 12)
-cowplot::plot_grid(CombinedPlot, CombinedPlotAUC, labels = c("A)", "B)"), label_x = 0.9, nrow = 2)
-graphics.off()
+write.csv(CombinedF1dataMulti,'data/CombinedF1dataMulti.csv',row.names = F)
