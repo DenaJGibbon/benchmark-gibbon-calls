@@ -139,14 +139,13 @@ analysis, and evaluation.
       install.packages(c("tidyr", "dplyr", "ggpubr", "cowplot", "stringr", "caret", "pROC"))
       ```
 
-    - **Python Dependencies**: Create a virtual environment and install
-      the required Python packages:
+    - **Python Dependencies**:
 
-      ``` bash
-      python -m venv env
-      source env/bin/activate
-      pip install -r requirements.txt
-      ```
+For Koogu instructions refer to:
+<https://shyamblast.github.io/Koogu/en/stable/>
+
+For BirdNET installation instructions refer to:
+<https://birdnet-team.github.io/BirdNET-Analyzer/>
 
 4.  **Set Up Environment**: Ensure all paths in the scripts are updated
     to match your local directory structure.
