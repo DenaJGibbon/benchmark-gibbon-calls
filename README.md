@@ -46,7 +46,7 @@ passive acoustic monitoring data. bioRxiv. 2024:2024-08.
 
 <figure>
 <img
-src="/Users/denaclink/Desktop/RStudioProjects/benchmark-gibbon-calls/MonthlyGIFFramesCallDensityOverTime.gif"
+src="https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTime.gif"
 alt="Online Supporting Material 1. A GIF showing the montly change in gibbon detections" />
 <figcaption aria-hidden="true">Online Supporting Material 1. A GIF
 showing the montly change in gibbon detections</figcaption>
