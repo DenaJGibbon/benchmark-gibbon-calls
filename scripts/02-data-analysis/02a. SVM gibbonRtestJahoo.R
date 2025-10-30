@@ -153,8 +153,14 @@ AUCSVMBinary <- auc(roc(response = TestPredictionsProb$ActualLabel,
                         levels = c("Noise", "CrestedGibbons"), direction = "<"))
 AUCSVMBinary <- round(as.numeric(AUCSVMBinary), 2)
 
+pos <- TestPredictionsProb[, 1][TestPredictionsProb$ActualLabel == "CrestedGibbons"]
+neg <- TestPredictionsProb[, 1][TestPredictionsProb$ActualLabel == "Noise"]
+
+AUCSVMBinary_prec <- round(pr.curve(scores.class0 = pos, scores.class1 = neg)$auc.integral, 2)
+
 # Add AUC to the results data frame
 BestF1data.frameCrestedGibbonSVMBinary$AUC <- AUCSVMBinary
+BestF1data.frameCrestedGibbonSVMBinary$AUC_prec <- AUCSVMBinary_prec
 
 # Step 9: View the best F1 score and corresponding threshold
 BestF1data.frameCrestedGibbonSVMBinary
@@ -162,7 +168,7 @@ max(na.omit(BestF1data.frameCrestedGibbonSVMBinary$F1))
 BestF1data.frameCrestedGibbonSVMBinary[which.max(na.omit(BestF1data.frameCrestedGibbonSVMBinary$F1)),]
 
 # Step 10: Save the results to a CSV file
-write.csv(BestF1data.frameCrestedGibbonSVMBinary, 'data/BestF1data.frameCrestedGibbonSVMBinary.csv', row.names = FALSE)
+write.csv(BestF1data.frameCrestedGibbonSVMBinary, 'data/BestF1data.frameCrestedGibbonSVMBinary_v1.csv', row.names = FALSE)
 
 # Step 11: Plot F1 score, Precision, and Recall against confidence thresholds
 MaxF1SVM <- round(max(na.omit(BestF1data.frameCrestedGibbonSVMBinary$F1)), 2)
@@ -251,8 +257,15 @@ AUCSVMMulti <- auc(roc(response = TestPredictionsProb$ActualLabel,
                        levels = c("Noise", "CrestedGibbons"), direction = "<"))
 AUCSVMMulti <- round(as.numeric(AUCSVMMulti), 2)
 
+pos <- TestPredictionsProb[, 1][TestPredictionsProb$ActualLabel == "CrestedGibbons"]
+neg <- TestPredictionsProb[, 1][TestPredictionsProb$ActualLabel == "Noise"]
+
+AUCSVMMulti_prec <- round(pr.curve(scores.class0 = pos, scores.class1 = neg)$auc.integral, 2)
+
 # Add AUC to the results data frame
 BestF1data.frameCrestedGibbonSVMMulti$AUC <- AUCSVMMulti
+# Add AUC to the results data frame
+BestF1data.frameCrestedGibbonSVMMulti$AUCSVMMulti_prec <- AUCSVMMulti_prec
 
 # Step 9: View the best F1 score and corresponding threshold
 BestF1data.frameCrestedGibbonSVMMulti  # View all results
@@ -260,7 +273,7 @@ max(na.omit(BestF1data.frameCrestedGibbonSVMMulti$F1))  # Maximum F1 score
 BestF1data.frameCrestedGibbonSVMMulti[which.max(na.omit(BestF1data.frameCrestedGibbonSVMMulti$F1)),]  # Best F1 score and threshold
 
 # Step 10: Save the results to a CSV file
-write.csv(BestF1data.frameCrestedGibbonSVMMulti, 'data/BestF1data.frameCrestedGibbonSVMMulti.csv')  # Save results
+write.csv(BestF1data.frameCrestedGibbonSVMMulti, 'data/BestF1data.frameCrestedGibbonSVMMulti_v1.csv')  # Save results
 
 # Step 11: Plot F1 score, Precision, and Recall against confidence thresholds
 MaxF1SVM <- round(max(na.omit(BestF1data.frameCrestedGibbonSVMMulti$F1)), 2)

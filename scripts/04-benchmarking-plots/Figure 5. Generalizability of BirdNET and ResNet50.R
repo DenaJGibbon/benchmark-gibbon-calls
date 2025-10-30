@@ -127,3 +127,52 @@ CombinedPlot <- plot_grid(F1Plot, AUCPlot, labels = c("A)", "B)"), label_x =.95,
 print(CombinedPlot)
 graphics.off()
 
+
+# Create table ------------------------------------------------------------
+library(dplyr)
+library(readr)
+library(knitr)
+
+# Summarize mean ± SD per model and sample size
+PerfSummary <- CombinedPerformanceDF %>%
+  group_by(Model, samples) %>%
+  summarise(
+    F1_mean  = mean(F1,  na.rm = TRUE),
+    F1_sd    = sd(F1,    na.rm = TRUE),
+    AUC_mean = mean(AUC, na.rm = TRUE),
+    AUC_sd   = sd(AUC,   na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Get best F1 per model
+BestF1 <- PerfSummary %>%
+  group_by(Model) %>%
+  slice_max(order_by = F1_mean, n = 1, with_ties = FALSE) %>%
+  rename(F1_samples = samples,
+         F1_best = F1_mean,
+         F1_sd_best = F1_sd)
+
+# Get best AUC per model
+BestAUC <- PerfSummary %>%
+  group_by(Model) %>%
+  slice_max(order_by = AUC_mean, n = 1, with_ties = FALSE) %>%
+  rename(AUC_samples = samples,
+         AUC_best = AUC_mean,
+         AUC_sd_best = AUC_sd)
+
+# Merge them together
+BestPerformance <- left_join(BestF1, BestAUC, by = "Model") %>%
+  mutate(
+    F1_summary  = sprintf("%.2f ± %.2f", F1_best, F1_sd_best),
+    AUC_summary = sprintf("%.3f ± %.3f", AUC_best, AUC_sd_best)
+  ) %>%
+  select(Model, F1_samples, F1_summary, AUC_samples, AUC_summary)
+
+# Save to CSV
+write_csv(BestPerformance, "results/Table4-best-performance-summary.csv")
+
+# Pretty print
+kable(BestPerformance, align = "lccccc",
+      caption = "Best-performing sample size per model with peak F1 and AUC (mean ± SD).")
+
+print(BestPerformance)

@@ -4,6 +4,7 @@ library(dplyr)
 library(ggpubr)
 library(cowplot)
 library(stringr)
+library(knitr)
 
 # BirdNET Binary Model Evaluation ----------------------------
 
@@ -190,3 +191,52 @@ ggpubr::ggline(data = CombinedRandomizationDFlong,
   scale_color_manual(values = c("#0080FF", "#00FFFF", "#80FF80", "#FF8000"))+
   theme(legend.title=element_blank())
 graphics.off()
+
+
+# Create a table ----------------------------------------------------------
+
+# --- Create summary of best-performing F1 and AUC per model type -------------
+library(dplyr)
+library(tidyr)
+library(readr)
+library(knitr)
+
+# Step 1: Aggregate performance by model, task, sample size, and metric
+agg <- CombinedRandomizationDFlong %>%
+  separate(model, into = c("Model", "Task"), sep = " ", extra = "merge") %>%
+  group_by(Model, Task, samples, metric) %>%
+  summarise(mean = mean(value, na.rm = TRUE),
+            sd   = sd(value, na.rm = TRUE),
+            .groups = "drop")
+
+# Step 2: For each Model × Task × metric, keep only the best-performing sample size
+best <- agg %>%
+  group_by(Model, Task, metric) %>%
+  slice_max(order_by = mean, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(best = sprintf("%.2f ± %.2f", mean, sd)) %>%
+  select(Model, Task, metric, samples, best)
+
+# Step 3: Pivot wider so AUC and F1 are paired with their sample sizes
+BestByModel <- best %>%
+  pivot_wider(
+    names_from = metric,
+    values_from = c(samples, best),
+    names_glue = "{metric}_{.value}"
+  ) %>%
+  arrange(Model, Task) %>%
+  select(Model, Task,
+         AUC_samples, AUC_best,
+         F1_samples, F1_best)
+
+# Step 4: Save table as CSV
+write_csv(BestByModel, "results/Table4-best-models-summary.csv")
+
+# Step 5: Optional pretty print for console or report
+kable(BestByModel,
+      align = "lccccc",
+      caption = "Best-performing sample size per model type with peak F1 and AUC (mean ± SD).")
+
+# Also print to console for quick verification
+print(BestByModel)
+

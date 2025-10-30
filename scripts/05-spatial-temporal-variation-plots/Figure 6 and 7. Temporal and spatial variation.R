@@ -9,6 +9,11 @@ library(ggplot2)  # Data visualization
 library(gridExtra)
 library(dplyr)
 library(ggplot2)
+library(lubridate)
+library(suncalc)
+
+# Change directory to where the Zenodo data are saved
+#setwd('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/')
 
 # Load detection data from a CSV file
 DetectionsDF <- read.csv('data/spatial-and-temporal/verified_detections.csv')  # Load the verified detection data from a CSV file
@@ -16,11 +21,17 @@ head(DetectionsDF)                                       # Display the first few
 nrow(DetectionsDF)                                       # Display the number of rows in the detection dataset
 
 # Load GPS data and format it
+
 TempFrame <- gpx::read_gpx('data/spatial-and-temporal/Jahootraining_Bioacoustic Units.gpx')  # Read GPS data from a GPX file
 TempFrame$waypoints$Name <- str_split_fixed(TempFrame$waypoints$Name, pattern = 'UNIT ', n = 2)[, 2]  # Extract recorder names from the "Name" field
 GPSPoints <- data.frame(TempFrame$waypoints$Name, TempFrame$waypoints$Latitude, TempFrame$waypoints$Longitude)  # Create a data frame with the recorder names and coordinates
 colnames(GPSPoints) <- c('Recorder', 'Latitude', 'Longitude')  # Rename the columns for clarity
-head(GPSPoints)                                                # Display the first few rows of the GPS data
+head(GPSPoints)
+# Display the first few rows of the GPS data
+
+MedianLat <- round(median(GPSPoints$Latitude),2)
+MedianLon <- round(median(GPSPoints$Longitude),2)
+#write.csv(GPSPoints,'data/spatial-and-temporal/Jahootraining_Bioacoustic Units.csv')
 
 # Merge detection data with GPS data
 CombinedDetectionData <- merge(DetectionsDF, GPSPoints, by.x = "Recorder", by.y = "Recorder")  # Merge the detection data with GPS data based on the "Recorder" field
@@ -92,9 +103,9 @@ range(CombinedCallNoCallDF$Date)
 
 # Figure 6. Temporal plot -----------------------------------------------------------
 # Define the monsoon period (May to October)
-monsoon_start_1 <- as.Date("2022-05-01")
+monsoon_start_1 <- as.Date("2022-06-01")
 monsoon_end_1 <- as.Date("2022-10-31")
-monsoon_start_2 <- as.Date("2023-05-01")
+monsoon_start_2 <- as.Date("2023-06-01")
 monsoon_end_2 <- as.Date("2023-10-31")
 
 # Step 1: Summarize data
@@ -107,7 +118,6 @@ summary_df <- CombinedCallNoCallDF %>%
   ) %>%
   filter(Date > as.Date("2022-02-28"))  # Exclude data before March 2022
 
-
 # Step 2: Plot the proportion over time
 DetectionsByDatePlot <- ggplot(summary_df, aes(x = as.Date(Date), y = ProportionDetected)) +
   geom_line(color = "grey", size = 1) +
@@ -115,7 +125,7 @@ DetectionsByDatePlot <- ggplot(summary_df, aes(x = as.Date(Date), y = Proportion
   labs(
     #title = "Proportion of Recorders with Detections Over Time",
     x = "Date",
-    y = "Proportion of Recorders with Detections"
+    y = "Proportion of recorders \n with detections"
   ) +
   theme_minimal() +
   theme(
@@ -158,22 +168,90 @@ rate_df$Time <- factor(rate_df$Time, levels = sort(unique(rate_df$Time)))
 # Filter the data frame for hours between 04:00 and 18:00
 rate_df <- rate_df[rate_df$Hour >= 4 & rate_df$Hour <= 18, ]
 
+
 # Create the bar plot
 StandarizedBarplot <- ggbarplot(data = rate_df, x = 'Time', y = 'StandardizedRate') +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ylab('Gibbon detections \n per hour') +
+  ylab('Gibbon detections \n (standardized per hour)') +
   xlab('Local time')
 
 # Display the plot
 print(StandarizedBarplot)
 
-StandarizedBarplot <- ggbarplot(data=rate_df,x='Time',y='StandardizedRate')+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +ylab('Gibbon detections \n per hour')+xlab('Local time')
+# Plot detections as a function of time since sunrise -----------------------------------
+ManuallyVerifiedDetects <-
+  'manually_verified_detections/CrestedGibbons/Positive/'
 
-pdf("results/Figure6-temporal-variation.pdf", width=12)
-cowplot::plot_grid(StandarizedBarplot,DetectionsByDatePlot,
-                   labels = c('A','B'), label_x = 0.9)
-graphics.off()
+ManuallyVerifiedNames <-
+  basename(list.files((ManuallyVerifiedDetects), recursive = T))
+
+ManuallyVerifiedFolder <-
+  (list.files((ManuallyVerifiedDetects), recursive = T))
+
+ManuallyVerifiedNamesSplit <- str_split_fixed(ManuallyVerifiedNames,pattern = '_',n=9)
+
+df <- as.data.frame(ManuallyVerifiedNamesSplit)
+
+# 1. Combine date (col 6) and recorder start time (col 7)
+df$StartDateTime <- ymd_hms(paste(df$V6, df$V7), tz = "Asia/Phnom_Penh")
+
+# 2. Convert offset within hour (col 3) to numeric seconds
+df$OffsetSec <- as.numeric(df$V3)
+
+# 3. Compute detection datetime (adds the within-hour offset)
+df$DetectionDateTime <- df$StartDateTime + seconds(df$OffsetSec)
+
+# 4. Extract detection time of day (class = hms or POSIXct)
+df$DetectionTime <- format(df$DetectionDateTime, format = "%H:%M:%S")
+
+# --- If you want it as time-of-day for arithmetic, keep POSIXct ---
+df$DetectionTimePOSIX <- as.POSIXct(df$DetectionTime, format = "%H:%M:%S", tz = "Asia/Phnom_Penh")
+
+## 1) Use the detection's local date as the join key
+df <- df %>%
+  mutate(DetDate = as.Date(DetectionDateTime, tz = "Asia/Phnom_Penh"))
+
+## 2) Get sunrise for unique detection dates
+sunrise_raw <- getSunlightTimes(
+  date = sort(unique(df$DetDate)),
+  lat  = MedianLat,
+  lon  = MedianLon,
+  tz   = "Asia/Phnom_Penh",
+  keep = "sunrise"
+) %>%
+  mutate(
+    DetDate = as.Date(date),
+    # take ONLY the time-of-day from the returned sunrise...
+    sunrise_tod = format(sunrise, "%H:%M:%S"),
+    # ...and rebuild it on the SAME DetDate to avoid next-day rollovers
+    SunriseDateTime = ymd_hms(paste(DetDate, sunrise_tod), tz = "Asia/Phnom_Penh")
+  ) %>%
+  select(DetDate, SunriseDateTime)
+
+## 3) Join and compute minutes since sunrise
+df <- df %>%
+  select(-any_of(c("SunriseDateTime","MinutesSinceSunrise"))) %>%  # idempotent
+  left_join(sunrise_raw, by = "DetDate") %>%
+  mutate(
+    MinutesSinceSunrise = as.numeric(difftime(DetectionDateTime, SunriseDateTime, units = "mins")),
+    SunriseTime = format(SunriseDateTime, "%H:%M:%S")  # optional, display only
+  )
+
+## 4) Quick check
+head(df[c("DetDate","DetectionDateTime","SunriseDateTime","MinutesSinceSunrise")])
+
+TimeSinceSunrise <-
+  gghistogram(data=df,x="MinutesSinceSunrise",bins = 60) + xlab('Minutes since sunrise')+
+  ylab('Number of gibbon \n detections')
+
+
+#pdf("results/Figure6-temporal-variation.pdf", width=12)
+# --- 2) Compose layout: (A | B) / C -----------------------------------------
+
+cowplot::plot_grid(StandarizedBarplot,TimeSinceSunrise,DetectionsByDatePlot,
+                   #nrow=3,
+                   labels = c('A','B','C'), label_x = 0.9)
+#graphics.off()
 
 # Figure 7. Interpolate call density based on GPS data-------------------------------------------------------------------------
 
