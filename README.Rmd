@@ -143,6 +143,6 @@ Clink, D., Cross-Jaya, H., Kim, J., Ahmad, A. H., Hong, M., Sala, R., Birot, H.,
 Clink DJ, Cross-Jaya H, Kim J, Ahmad AH, Hong M, Sala R, Birot H, Agger C, Vu TT, Thi HN, Chi TN. Benchmarking automated detection and classification approaches for long-term acoustic monitoring of endangered species: a case study on gibbons from Cambodia. bioRxiv. 2024:2024-08.
 
 ## Representative figures
-![Online Supporting Material 1. A GIF showing the montly change in gibbon detections](https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTime.gif)
+![Online Supporting Material 1. A GIF showing the montly change in gibbon detections](https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTimev1.gif)
 ## Contact
 For questions or contributions, please contact the project maintainer at [dena.clink@cornell.edu].

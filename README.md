@@ -192,6 +192,6 @@ endangered species: a case study on gibbons from Cambodia. bioRxiv.
 
 ![Online Supporting Material 1. A GIF showing the montly change in
 gibbon
-detections](https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTime.gif)
+detections](https://github.com/DenaJGibbon/benchmark-gibbon-calls/blob/main/MonthlyGIFFramesCallDensityOverTimev1.gif)
 \## Contact For questions or contributions, please contact the project
 maintainer at \[<dena.clink@cornell.edu>\].
