@@ -363,11 +363,11 @@ CrestedGibbonSVMMultiPlot
 
 # Koogu binary -------------------------------------------------------------------
 
-ClipDetections <- list.files('results/koogu/detections',
-                             recursive = T,full.names = T)
+ClipDetections <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/koogu_updated/binary/detections/',
+                             recursive = T,full.names = T, pattern = '.txt')
 
-ClipDetectionsShort <- list.files('results/koogu/detections/',
-                                  recursive = T,full.names = F)
+ClipDetectionsShort <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/koogu_updated/binary/detections/',
+                                  recursive = T,full.names = F, pattern = '.txt')
 
 KooguBinaryPerformanceDF <- data.frame()
 
@@ -477,11 +477,11 @@ CrestedGibbonKooguBinaryPlot
 
 # Koogu gibbon multi ----------------------------------------------------
 
-ClipDetections <- list.files('results/koogu/detections_multi',
-                             recursive = T,full.names = T)
+ClipDetections <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/koogu_updated/multi/detections/',
+                             recursive = T,full.names = T,pattern = '.txt')
 
-ClipDetectionsShort <- list.files('results/koogu/detections_multi/',
-                                  recursive = T,full.names = F)
+ClipDetectionsShort <- list.files('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/results/koogu_updated/multi/detections/',
+                                  recursive = T,full.names = F,pattern = '.txt')
 
 KooguMultiPerformanceDF <- data.frame()
 
@@ -578,7 +578,8 @@ CrestedGibbonKooguMultiPlot <- ggplot(data = BestF1data.frameCrestedGibbonKooguM
   geom_line(aes(y = Precision, color = "Precision", linetype = "Precision")) +
   geom_line(aes(y = Recall, color = "Recall", linetype = "Recall")) +
   labs(title = paste("Koogu Multi \n",'Max F1=', MaxF1KooguMulti,
-                     "AUC-ROC=",AUCKooguMulti),
+                     "AUC-ROC=",sprintf("%.2f", AUCKooguMulti)
+),
        x = "Score",
        y = "Values") +
   scale_color_manual(values = c("F1" = "blue", "Precision" = "red", "Recall" = "green"),
@@ -597,8 +598,7 @@ cowplot::plot_grid(CrestedGibbonSVMPlot, CrestedGibbonSVMMultiPlot,
                    CrestedGibbonKooguBinaryPlot,CrestedGibbonKooguMultiPlot,
                    CrestedGibbonCNNBinary,CrestedGibbonCNNMulti,
                    CrestedGibbonBirdNETPlot,CrestedGibbonBirdNETMultiPlot,
-                   nrow=4, labels=c('A)','B)','C)','D)','E)','F)','G)','H)'),
-                   label_x = 0.9)
+                   nrow=4, labels=c('A)','B)','C)','D)','E)','F)','G)','H)'))
 graphics.off()
 
 

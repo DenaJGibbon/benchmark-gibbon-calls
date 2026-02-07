@@ -23,7 +23,7 @@ month.index <- sort(unique(CombinedCallNoCallDF$YearMonth))
 # Create a gif ------------------------------------------------------------
 
 # Create a folder to save the images
-dir.create("data/spatial-and-temporal/MonthlyGIFFrames", showWarnings = FALSE)
+dir.create("data/spatial-and-temporal/MonthlyGIFFramesv1", showWarnings = FALSE)
 
 for(w in c(3:27)){
   CombinedCallNoCallDFSub <- subset(CombinedCallNoCallDF, YearMonth == month.index[w])
@@ -62,7 +62,7 @@ for(w in c(3:27)){
   breaks <- seq(0, 0.4, length.out = 6)
   colors <- rev(viridis::viridis(4))
   color_scale <- scale_fill_gradientn(
-    colors = colors,
+    colors = rev(colors),
     values = scales::rescale(breaks),
     limits = c(0.0, 0.4),
     breaks = breaks
@@ -82,7 +82,7 @@ for(w in c(3:27)){
     theme(panel.grid = element_blank(), legend.text = element_text(size = 12), legend.title = element_text(size = 12))
 
   ggsave(
-    filename = sprintf("data/spatial-and-temporal/MonthlyGIFFrames/frame_%02d_%s.png", w, month.index[w]),
+    filename = sprintf("data/spatial-and-temporal/MonthlyGIFFramesv1/frame_%02d_%s.png", w, month.index[w]),
     plot = p,
     width = 8, height = 6, dpi = 150
   )
@@ -92,9 +92,9 @@ for(w in c(3:27)){
 library(magick)
 
 # List and read all frame images
-frames <- list.files("data/spatial-and-temporal/MonthlyGIFFrames", pattern = "\\.png$", full.names = TRUE)
+frames <- list.files("data/spatial-and-temporal/MonthlyGIFFramesv1", pattern = "\\.png$", full.names = TRUE)
 frames <- image_read(frames)
 
 # Animate and save as GIF
 animated <- image_animate(image_join(frames), fps = 2)
-image_write(animated, "/Users/denaclink/Desktop/RStudioProjects/benchmark-gibbon-calls/MonthlyGIFFramesCallDensityOverTime.gif")
+image_write(animated, "/Users/denaclink/Desktop/RStudioProjects/benchmark-gibbon-calls/MonthlyGIFFramesCallDensityOverTimev1.gif")

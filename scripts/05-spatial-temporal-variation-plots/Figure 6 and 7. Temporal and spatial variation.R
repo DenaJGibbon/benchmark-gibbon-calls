@@ -245,13 +245,31 @@ TimeSinceSunrise <-
   ylab('Number of gibbon \n detections')
 
 
-#pdf("results/Figure6-temporal-variation.pdf", width=12)
+pdf("results/Figure6-temporal-variation.pdf", width=12)
 # --- 2) Compose layout: (A | B) / C -----------------------------------------
 
-cowplot::plot_grid(StandarizedBarplot,TimeSinceSunrise,DetectionsByDatePlot,
-                   #nrow=3,
-                   labels = c('A','B','C'), label_x = 0.9)
-#graphics.off()
+# Combine A and B side by side
+top_row <- plot_grid(
+  StandarizedBarplot,
+  TimeSinceSunrise,
+  labels = c("A", "B"),
+  label_size = 14,
+  ncol = 2,
+  align = "h",label_x = 0.9
+)
+
+# Add C centered underneath
+final_plot <- plot_grid(
+  top_row,
+  DetectionsByDatePlot,
+  labels = c("", "C"),
+  label_size = 14,
+  ncol = 1,label_x = 0.9,
+  rel_heights = c(1, 0.6)  # adjust height ratio as needed
+)
+
+print(final_plot)
+graphics.off()
 
 # Figure 7. Interpolate call density based on GPS data-------------------------------------------------------------------------
 

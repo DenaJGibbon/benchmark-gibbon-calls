@@ -24,17 +24,20 @@ TempWavMQ <- resamp(TempWavMQ, f = TempWavMQ@samp.rate, g = 16000, output = "Wav
 TempWavHQ <- resamp(TempWavHQ, f = TempWavHQ@samp.rate, g = 16000, output = "Wave")
 
 TempWavDakrong <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Dakrong_testdata/gibbon/Gibbon_Group 3_R1_20210702_050102_3325.wav')
+TempWavFunereus <- readWave('/Volumes/DJC Files/Benchmarking_MS_Data/benchmarking_zenodo/data/AcousticData/Danum_trainingdata/Gibbons_SW8_20180318_060002_2606.36883259003_2614.07140171724_.wav')
 
 TempSpecLQ <- spectrogram (TempWavLQ@left,fs = TempWavLQ@samp.rate,windowlength = 75, quality = F)
 TempSpecMQ <-spectrogram (TempWavMQ@left,fs = TempWavMQ@samp.rate,windowlength = 75, quality = F)
 TempSpecHQ <-spectrogram (TempWavHQ@left,fs = TempWavHQ@samp.rate,windowlength = 75, quality = F)
 TempSpecDakrong <-spectrogram (TempWavDakrong@left,fs = TempWavDakrong@samp.rate,windowlength = 75, quality = F)
+TempSpecFunereus <-spectrogram (TempWavFunereus@left,fs = TempWavFunereus@samp.rate,windowlength = 75, quality = F)
 
-tiff('results/Spectroexample_updated.tiff',width = 1600,res=200)
-par(mfrow=c(1,4))
+tiff('results/Spectroexample_addfunereus.tiff',width = 4000,height=800,res=400)
+par(mfrow=c(1,5))
 plot.spectrogram(TempSpecLQ)
 plot.spectrogram(TempSpecMQ)
 plot.spectrogram(TempSpecHQ)
 plot.spectrogram(TempSpecDakrong)
+plot.spectrogram(TempSpecFunereus)
 graphics.off()
 
